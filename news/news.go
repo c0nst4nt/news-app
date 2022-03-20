@@ -1,0 +1,76 @@
+package news
+
+import (
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"net/http"
+	"net/url"
+	"time"
+)
+
+type Client struct {
+	http     *http.Client
+	key      string
+	PageSize int
+}
+
+type Article struct {
+	Status       string `json:"status"`
+	TotalResults int    `json:"totalResults"`
+	Articles     []struct {
+		Source struct {
+			ID   interface{} `json:"id"`
+			Name string      `json:"name"`
+		} `json:"source"`
+		Author      string    `json:"author"`
+		Title       string    `json:"title"`
+		Description string    `json:"description"`
+		URL         string    `json:"url"`
+		URLToImage  string    `json:"urlToImage"`
+		PublishedAt time.Time `json:"publishedAt"`
+		Content     string    `json:"content"`
+	} `json:"articles"`
+}
+
+type Results struct {
+	Status       string    `json:"status"`
+	TotalResults int       `json:"totalResults"`
+	Articles     []Article `json:"articles"`
+}
+
+func NewClient(httpClient *http.Client, key string, pageSize int) *Client {
+	if pageSize > 100 {
+		pageSize = 100
+	}
+
+	return &Client{httpClient, key, pageSize}
+}
+
+func (c *Client) FetchEverything(query, page string) (*Results, error) {
+	endpointString := "https://newsapi.org/v2/everything?q=%s"+
+		"&pageSize=%d"+
+		"&apiKey=%s"+
+		"&page=%s"+
+		"&sortBy=publishedAt&language=en"
+	endpoint := fmt.Sprintf(endpointString, url.QueryEscape(query), c.PageSize, c.key, page)
+
+	resp, err := c.http.Get(endpoint)
+	if err != nil {
+		return nil, err
+	}
+
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf(string(body))
+	}
+
+	res := &Results{}
+	return res, json.Unmarshal(body, res)
+}
