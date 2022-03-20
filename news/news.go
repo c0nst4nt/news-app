@@ -16,21 +16,17 @@ type Client struct {
 }
 
 type Article struct {
-	Status       string `json:"status"`
-	TotalResults int    `json:"totalResults"`
-	Articles     []struct {
-		Source struct {
-			ID   interface{} `json:"id"`
-			Name string      `json:"name"`
-		} `json:"source"`
-		Author      string    `json:"author"`
-		Title       string    `json:"title"`
-		Description string    `json:"description"`
-		URL         string    `json:"url"`
-		URLToImage  string    `json:"urlToImage"`
-		PublishedAt time.Time `json:"publishedAt"`
-		Content     string    `json:"content"`
-	} `json:"articles"`
+	Source struct {
+		ID   interface{} `json:"id"`
+		Name string      `json:"name"`
+	} `json:"source"`
+	Author      string    `json:"author"`
+	Title       string    `json:"title"`
+	Description string    `json:"description"`
+	URL         string    `json:"url"`
+	URLToImage  string    `json:"urlToImage"`
+	PublishedAt time.Time `json:"publishedAt"`
+	Content     string    `json:"content"`
 }
 
 type Results struct {
@@ -48,10 +44,10 @@ func NewClient(httpClient *http.Client, key string, pageSize int) *Client {
 }
 
 func (c *Client) FetchEverything(query, page string) (*Results, error) {
-	endpointString := "https://newsapi.org/v2/everything?q=%s"+
-		"&pageSize=%d"+
-		"&apiKey=%s"+
-		"&page=%s"+
+	endpointString := "https://newsapi.org/v2/everything?q=%s" +
+		"&pageSize=%d" +
+		"&apiKey=%s" +
+		"&page=%s" +
 		"&sortBy=publishedAt&language=en"
 	endpoint := fmt.Sprintf(endpointString, url.QueryEscape(query), c.PageSize, c.key, page)
 
