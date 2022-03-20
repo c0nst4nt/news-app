@@ -1,4 +1,4 @@
-module github.com/c0nst4nt/news-app
+module news-app
 
 go 1.16
 

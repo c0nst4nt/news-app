@@ -8,8 +8,7 @@ import (
 	"net/url"
 	"os"
 	"time"
-
-	news "github.com/c0nst4nt/news-app/news"
+	"news-app/news"
 	"github.com/joho/godotenv"
 )
 
